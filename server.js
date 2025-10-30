@@ -52,13 +52,14 @@ app.post("/run-playwright", async (req, res) => {
 
     log("🔍 Launching Edge...");
     const context = await chromium.launchPersistentContext(tempProfile, {
-      headless: false,
-      executablePath: edgePath,
-      args: [
-        `--disable-extensions-except=${extensionPath}`,
-        `--load-extension=${extensionPath}`,
-      ],
+    headless: true,
+    args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+    ],
     });
+
 
     const page = await context.newPage();
     const extensionUrl = `chrome-extension://${extensionId}/index.html`;
@@ -99,4 +100,6 @@ app.post("/run-playwright", async (req, res) => {
 });
 
 // --- Start server ---
-app.listen(4000, () => console.log("🚀 Server running on http://localhost:4000"));
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
